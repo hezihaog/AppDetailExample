@@ -4,29 +4,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android.zh.appdetailexample.item.ListItemViewBinder
-import com.android.zh.appdetailexample.model.ListItemModel
+import com.android.zh.appdetailexample.item.RecommendAppGroupViewBinder
+import com.android.zh.appdetailexample.model.RecommendAppGroupModel
+import com.android.zh.appdetailexample.model.RecommendAppModel
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import me.drakeet.multitype.Items
 import me.drakeet.multitype.MultiTypeAdapter
 
-/**
- * @author : lizhi - hezihao
- * e-mail : hezihao@lizhi.fm
- * time   : 2020/04/03
- * desc   :
- */
-class ListFragment : Fragment() {
+class RecommendAppListFragment : Fragment() {
     private lateinit var vRefreshLayout: SmartRefreshLayout
     private lateinit var vRefreshList: RecyclerView
 
     companion object {
-        fun newInstance(args: Bundle? = null): ListFragment {
-            val fragment = ListFragment()
+        fun newInstance(args: Bundle? = null): RecommendAppListFragment {
+            val fragment = RecommendAppListFragment()
             fragment.arguments = args ?: Bundle()
             return fragment
         }
@@ -38,7 +34,11 @@ class ListFragment : Fragment() {
 
     private val mListAdapter by lazy {
         MultiTypeAdapter(mListItem).apply {
-            register(ListItemModel::class.java, ListItemViewBinder())
+            register(RecommendAppGroupModel::class.java, RecommendAppGroupViewBinder({
+                Toast.makeText(activity, "更多：${it.groupName}", Toast.LENGTH_SHORT).show()
+            }, {
+                Toast.makeText(activity, "安装：${it.name}", Toast.LENGTH_SHORT).show()
+            }))
         }
     }
 
@@ -64,11 +64,9 @@ class ListFragment : Fragment() {
 
     private fun bindView() {
         vRefreshLayout.apply {
+            setEnableLoadMore(false)
             setOnRefreshListener {
                 refresh()
-            }
-            setOnLoadMoreListener {
-                loadMore()
             }
         }
         vRefreshList.apply {
@@ -85,20 +83,23 @@ class ListFragment : Fragment() {
     private fun refresh() {
         mListItem.clear()
         for (index in 0..15) {
-            mListItem.add(ListItemModel("item：$index"))
+            mListItem.add(
+                RecommendAppGroupModel(
+                    "group：$index",
+                    mutableListOf<RecommendAppModel>().apply {
+                        for (i in 0..10) {
+                            add(
+                                RecommendAppModel(
+                                    R.mipmap.ic_launcher_round,
+                                    "抖音：${i}",
+                                    "com.bytedance.douyin"
+                                )
+                            )
+                        }
+                    })
+            )
         }
         mListAdapter.notifyDataSetChanged()
         vRefreshLayout.finishRefresh(true)
-    }
-
-    private fun loadMore() {
-        val newItems = mutableListOf<ListItemModel>()
-        for (index in 0..15) {
-            newItems.add(ListItemModel("new item"))
-        }
-        val startIndex = mListItem.size
-        mListItem.addAll(newItems)
-        mListAdapter.notifyItemRangeInserted(startIndex, newItems.size)
-        vRefreshLayout.finishLoadMore(true)
     }
 }

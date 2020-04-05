@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AppDetailExample</string>
+    <string name="app_more">更多</string>
+    <string name="app_install">安装</string>
 </resources>

@@ -1,9 +1,9 @@
 package com.android.zh.appdetailexample
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
@@ -35,11 +35,14 @@ class MainActivity : AppCompatActivity() {
 
     private val mFragmentList by lazy {
         mutableListOf<Fragment>().apply {
-            mTabList.forEach { tab ->
-                val args = Bundle()
-                args.putString(ListFragment.MODULE_NAME, tab.text.toString())
-                add(ListFragment.newInstance(args))
-            }
+            //详情
+            add(ListFragment.newInstance())
+            //评论
+            add(ListFragment.newInstance())
+            //推荐
+            add(
+                RecommendAppListFragment.newInstance()
+            )
         }
     }
 
